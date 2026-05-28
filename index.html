@@ -625,7 +625,7 @@ function renderCards() {
           </div>
         </div>
       </div>
-      <div class="fc-hint">👆 нажми чтобы перевернуть</div>
+      <div class="fc-hint">👆 tap — перевернуть &nbsp;|&nbsp; 👈👉 swipe — листать</div>
       <div class="fc-nav">
         <button class="fc-btn" onclick="fcPrev()">←</button>
         <button class="fc-shuffle" onclick="fcShuffle()">🔀 Перемешать</button>
@@ -633,6 +633,7 @@ function renderCards() {
       </div>
     </div>`;
   cardFlipped = false;
+  initSwipe();
 }
 
 function fcFlip() {
@@ -642,6 +643,42 @@ function fcFlip() {
 }
 function fcNext() { const cards = getFiltered(); cardIdx = (cardIdx+1)%cards.length; renderCards(); }
 function fcPrev() { const cards = getFiltered(); cardIdx = (cardIdx-1+cards.length)%cards.length; renderCards(); }
+
+function initSwipe() {
+  const card = document.querySelector(".fc-card");
+  if (!card) return;
+  let startX = 0, startY = 0, moved = false;
+  card.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    moved = false;
+  }, {passive: true});
+  card.addEventListener("touchmove", e => {
+    moved = true;
+  }, {passive: true});
+  card.addEventListener("touchend", e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (!moved || (Math.abs(dx) < 30 && Math.abs(dy) < 30)) return;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      // горизонтальный свайп — листать
+      const inner = document.getElementById("fcInner");
+      if (inner) {
+        inner.style.transition = "transform 0.25s, opacity 0.2s";
+        inner.style.opacity = "0";
+        inner.style.transform = dx < 0 ? "rotateY(180deg) translateX(40px)" : "translateX(-40px)";
+        setTimeout(() => {
+          if (dx < 0) fcNext(); else fcPrev();
+        }, 200);
+      } else {
+        if (dx < 0) fcNext(); else fcPrev();
+      }
+    } else {
+      // вертикальный свайп — перевернуть
+      fcFlip();
+    }
+  }, {passive: true});
+}
 function fcShuffle() {
   const cards = shuffle(getFiltered());
   DATA[activeCategory === "all" ? null : activeCategory];
