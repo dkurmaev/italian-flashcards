@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Italiano — Разговорник</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --surface2: #f2efe8;
+  --border: #e8e3d8;
+  --text: #1c1a16;
+  --muted: #7a7163;
+  --accent: #c8401a;
+  --accent2: #e8a020;
+  --green: #2a7a4a;
+  --red: #c03030;
+  --blue: #1a5a8a;
+  --radius: 12px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* LAYOUT */
+.shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px; flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh;
+  overflow-y: auto;
+}
+.main { flex: 1; overflow-y: auto; }
+
+/* SIDEBAR */
+.logo {
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.logo-flag { font-size: 28px; margin-bottom: 4px; }
+.logo-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px; color: var(--accent);
+  line-height: 1.1;
+}
+.logo-sub { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 2px; }
+
+.nav-section { padding: 1rem 0.75rem 0.25rem; }
+.nav-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 0 0.5rem; margin-bottom: 4px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 8px;
+  cursor: pointer; font-size: 13px; color: var(--muted);
+  transition: all 0.15s; border: none; background: none; width: 100%; text-align: left;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: #fce8e2; color: var(--accent); font-weight: 500; }
+.nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-item .count { margin-left: auto; font-size: 11px; background: var(--surface2); padding: 1px 7px; border-radius: 10px; }
+.nav-item.active .count { background: #f9c4b4; }
+
+.mode-bar {
+  margin-top: auto; padding: 1rem 0.75rem;
+  border-top: 1px solid var(--border);
+}
+.mode-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+.mode-btns { display: flex; flex-direction: column; gap: 4px; }
+.mode-btn {
+  padding: 8px 10px; border-radius: 8px;
+  border: 1px solid var(--border); background: transparent;
+  font-size: 13px; cursor: pointer; text-align: left;
+  color: var(--muted); display: flex; align-items: center; gap: 8px;
+  font-family: 'DM Sans', sans-serif;
+}
+.mode-btn:hover { background: var(--surface2); color: var(--text); }
+.mode-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+/* MAIN AREA */
+.topbar {
+  padding: 1.25rem 2rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 10;
+}
+.page-title { font-family: 'DM Serif Display', serif; font-size: 24px; }
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 12px;
+}
+.search-box input {
+  border: none; background: none; outline: none;
+  font-size: 13px; font-family: 'DM Sans', sans-serif;
+  color: var(--text); width: 180px;
+}
+.search-box input::placeholder { color: var(--muted); }
+
+.content { padding: 1.5rem 2rem 3rem; }
+
+/* CARDS MODE */
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.phrase-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.phrase-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); border-color: #d0c8b8; }
+.phrase-card .ru { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+.phrase-card .it { font-size: 17px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.phrase-card .pr { font-size: 12px; color: var(--accent); font-style: italic; }
+.phrase-card .tag {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 10px; background: var(--surface2);
+  color: var(--muted); padding: 2px 8px; border-radius: 10px;
+}
+.phrase-card.fav .tag-fav { color: var(--accent2); }
+
+/* FLASHCARD MODE */
+.fc-wrap {
+  max-width: 560px; margin: 2rem auto; text-align: center;
+}
+.fc-progress { font-size: 13px; color: var(--muted); margin-bottom: 1rem; }
+.fc-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 2rem; }
+.fc-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; }
+.fc-card {
+  height: 260px; perspective: 1000px; cursor: pointer; margin-bottom: 1.5rem;
+}
+.fc-inner {
+  width: 100%; height: 100%;
+  transform-style: preserve-3d; transition: transform 0.5s;
+  position: relative;
+}
+.fc-inner.flipped { transform: rotateY(180deg); }
+.fc-face {
+  position: absolute; inset: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; backface-visibility: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 2rem;
+}
+.fc-back { background: var(--surface2); transform: rotateY(180deg); }
+.fc-face-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 16px; }
+.fc-word { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--text); margin-bottom: 10px; }
+.fc-pron { font-size: 16px; color: var(--accent); font-style: italic; margin-bottom: 8px; }
+.fc-topic { font-size: 12px; color: var(--muted); }
+.fc-hint { font-size: 12px; color: var(--muted); margin-bottom: 1.5rem; }
+.fc-nav { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.fc-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--surface);
+  font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.fc-btn:hover { background: var(--surface2); }
+.fc-shuffle { padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border); background: transparent; font-family: 'DM Sans',sans-serif; font-size: 13px; cursor: pointer; color: var(--text); }
+.fc-shuffle:hover { background: var(--surface2); }
+
+/* QUIZ MODE */
+.quiz-wrap { max-width: 560px; margin: 2rem auto; }
+.quiz-q {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px; text-align: center; margin-bottom: 6px;
+}
+.quiz-sub { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 2rem; }
+.quiz-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+.quiz-opt {
+  padding: 16px 14px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--surface);
+  font-family: 'DM Sans',sans-serif; font-size: 14px; cursor: pointer;
+  text-align: center; line-height: 1.5; transition: all 0.15s; white-space: pre-line;
+}
+.quiz-opt:hover:not(:disabled) { background: var(--surface2); border-color: #c8c0b0; }
+.quiz-opt.correct { background: #d4f0e0; color: #1a5a30; border-color: #80c8a0; }
+.quiz-opt.wrong { background: #fde8e8; color: #8a2020; border-color: #e09090; }
+.quiz-stats { display: flex; gap: 10px; margin-bottom: 1rem; }
+.stat-box { flex:1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; }
+.stat-num { font-family: 'DM Serif Display',serif; font-size: 28px; }
+.stat-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* TYPE MODE */
+.type-wrap { max-width: 480px; margin: 2rem auto; text-align: center; }
+.type-q { font-family: 'DM Serif Display',serif; font-size: 30px; margin-bottom: 6px; }
+.type-sub { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; }
+.type-input {
+  width: 100%; padding: 14px 18px;
+  border: 2px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); font-size: 18px; text-align: center;
+  outline: none; font-family: 'DM Sans',sans-serif; color: var(--text);
+  margin-bottom: 12px; transition: border-color 0.2s;
+}
+.type-input:focus { border-color: var(--accent); }
+.type-fb { font-size: 15px; font-weight: 500; min-height: 26px; margin-bottom: 12px; }
+.type-check {
+  padding: 11px 28px; border-radius: 8px;
+  border: 1px solid var(--text); background: var(--text);
+  color: var(--bg); font-size: 14px; cursor: pointer; font-family: 'DM Sans',sans-serif;
+}
+.type-check:hover { opacity: 0.85; }
+
+/* SECTION HEADER */
+.section-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.section-hdr h3 {
+  font-family: 'DM Serif Display',serif; font-size: 20px;
+}
+.section-hdr .cnt { font-size: 13px; color: var(--muted); }
+.section-sep { height: 1px; background: var(--border); margin: 2rem 0; }
+
+/* MOBILE */
+.hamburger { display: none; }
+@media (max-width: 700px) {
+  .sidebar { position: fixed; left: -240px; top: 0; height: 100%; z-index: 100; transition: left 0.25s; }
+  .sidebar.open { left: 0; box-shadow: 4px 0 24px rgba(0,0,0,0.15); }
+  .hamburger { display: block; font-size: 22px; background: none; border: none; cursor: pointer; color: var(--text); }
+  .topbar { padding: 1rem; gap: 8px; }
+  .search-box input { width: 120px; }
+  .content { padding: 1rem; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .quiz-opts { grid-template-columns: 1fr; }
+}
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
+.overlay.show { display: block; }
+
+/* EMPTY */
+.empty { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-flag">🇮🇹</div>
+      <div class="logo-title">Italiano</div>
+      <div class="logo-sub">Разговорник</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Категории</div>
+      <div id="navList"></div>
+    </div>
+
+    <div class="mode-bar">
+      <div class="mode-label">Режим</div>
+      <div class="mode-btns">
+        <button class="mode-btn active" onclick="setMode('browse')" id="mb-browse">📖 Все фразы</button>
+        <button class="mode-btn" onclick="setMode('cards')" id="mb-cards">🃏 Карточки</button>
+        <button class="mode-btn" onclick="setMode('quiz')" id="mb-quiz">🎯 Тест</button>
+        <button class="mode-btn" onclick="setMode('type')" id="mb-type">⌨️ Написание</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="hamburger" onclick="openSidebar()">☰</button>
+        <div class="page-title" id="pageTitle">Все фразы</div>
+      </div>
+      <div class="search-box">
+        <span style="color:var(--muted);font-size:14px;">🔍</span>
+        <input type="text" id="searchInput" placeholder="Поиск..." oninput="doSearch()">
+      </div>
+    </div>
+
+    <div class="content" id="mainContent"></div>
+  </div>
+</div>
+
+<script>
+const DATA = {
+  "⭐ Топ фраз": {icon:"⭐", phrases:[
+    {ru:"Как тебя зовут?",              it:"Come ti chiami?",              pr:"Комэ ти кьями?"},
+    {ru:"Меня зовут...",                it:"Mi chiamo...",                 pr:"Ми кьямо..."},
+    {ru:"Откуда ты?",                   it:"Di dove sei?",                 pr:"Ди довэ сэй?"},
+    {ru:"Я из России",                  it:"Sono russo/a",                 pr:"Соно руссо/а"},
+    {ru:"Сколько тебе лет?",            it:"Quanti anni hai?",             pr:"Куанти анни ай?"},
+    {ru:"Мне ... лет",                  it:"Ho ... anni",                  pr:"О ... анни"},
+    {ru:"Ты говоришь по-итальянски?",   it:"Parli italiano?",              pr:"Парли итальяно?"},
+    {ru:"Чуть-чуть",                    it:"Un poco",                      pr:"Ун поко"},
+    {ru:"Я учу итальянский",            it:"Sto imparando l'italiano",     pr:"Сто импарандо литальяно"},
+    {ru:"Как это по-итальянски?",       it:"Come si dice in italiano?",    pr:"Комэ си дичэ ин итальяно?"},
+    {ru:"Что значит...?",               it:"Cosa vuol dire...?",           pr:"Коза вуол дирэ...?"},
+    {ru:"Повтори, пожалуйста",          it:"Puoi ripetere?",               pr:"Пуой рипэтэрэ?"},
+    {ru:"Говори медленнее",             it:"Parla più lentamente",         pr:"Парла пью лентаментэ"},
+    {ru:"Я не понимаю",                 it:"Non capisco",                  pr:"Нон каписко"},
+    {ru:"Понял / поняла",               it:"Ho capito",                    pr:"О капито"},
+    {ru:"Правда?",                      it:"Davvero?",                     pr:"Давверо?"},
+    {ru:"Конечно!",                     it:"Certo!",                       pr:"Черто!"},
+    {ru:"Не важно",                     it:"Non importa",                  pr:"Нон импорта"},
+    {ru:"Подожди секунду",              it:"Aspetta un momento",           pr:"Аспэтта ун моменто"},
+    {ru:"Мне очень нравится Италия",    it:"Mi piace molto l'Italia",      pr:"Ми пьяче мольто литалья"},
+    {ru:"Это красиво!",                 it:"Che bello!",                   pr:"Ке бэлло!"},
+    {ru:"Здорово! / Классно!",          it:"Che figata!",                  pr:"Ке фигата!"},
+    {ru:"Ничего страшного",             it:"Non c'è problema",             pr:"Нон чэ проблема"},
+    {ru:"Удачи!",                       it:"In bocca al lupo!",            pr:"Ин бокка аль лупо!"},
+    {ru:"Ответ на «удачи»",             it:"Crepi!",                       pr:"Крэпи!"},
+    {ru:"Приятного аппетита!",          it:"Buon appetito!",               pr:"Буон аппетито!"},
+    {ru:"За здоровье! (тост)",          it:"Salute! / Cin cin!",           pr:"Салутэ! / Чин чин!"},
+    {ru:"Всё в порядке?",               it:"Tutto bene?",                  pr:"Тутто бэне?"},
+    {ru:"Всё отлично",                  it:"Tutto benissimo",              pr:"Тутто бэниссимо"},
+    {ru:"Увидимся!",                    it:"Ci vediamo!",                  pr:"Чи ведьямо!"},
+  ]},
+  "Приветствия": {icon:"👋", phrases:[
+    {ru:"Привет / Пока",          it:"Ciao",                    pr:"Чао"},
+    {ru:"Добрый день",            it:"Buon giorno",             pr:"Буон джорно"},
+    {ru:"Добрый вечер",           it:"Buona sera",              pr:"Буона сэра"},
+    {ru:"Добрая ночь",            it:"Buona notte",             pr:"Буона ноттэ"},
+    {ru:"Как дела?",              it:"Come stai?",              pr:"Комэ стай?"},
+    {ru:"Хорошо, спасибо",        it:"Bene, grazie",            pr:"Бэне, грацие"},
+    {ru:"Очень приятно",          it:"Molto piacere",           pr:"Мольто пьячерэ"},
+    {ru:"До свидания",            it:"Arrivederci",             pr:"Арриведерчи"},
+    {ru:"До скорого",             it:"A presto",                pr:"А прэсто"},
+  ]},
+  "Основные": {icon:"💬", phrases:[
+    {ru:"Да",                     it:"Sì",                      pr:"Си"},
+    {ru:"Нет",                    it:"No",                      pr:"Но"},
+    {ru:"Хорошо",                 it:"Va bene",                 pr:"Ва бэне"},
+    {ru:"Спасибо",                it:"Grazie",                  pr:"Грацие"},
+    {ru:"Пожалуйста",             it:"Prego / per favore",      pr:"Прэго / пер фаворэ"},
+    {ru:"Извините",               it:"Scusi",                   pr:"Скузи"},
+    {ru:"Простите",               it:"Mi dispiace",             pr:"Ми диспьяче"},
+    {ru:"Не понимаю",             it:"Non capisco",             pr:"Нон каписко"},
+    {ru:"Повторите пожалуйста",   it:"Può ripetere?",           pr:"Пуо рипэтэрэ?"},
+    {ru:"Говорите медленнее",     it:"Parli più lentamente",    pr:"Парли пью лентаменте"},
+    {ru:"Вы говорите по-русски?", it:"Parla russo?",            pr:"Парла руссо?"},
+    {ru:"Согласен",               it:"D'accordo",               pr:"Даккордо"},
+    {ru:"Конечно!",               it:"Certo!",                  pr:"Черто!"},
+    {ru:"Не знаю",                it:"Non lo so",               pr:"Нон ло со"},
+  ]},
+  "Вопросы": {icon:"❓", phrases:[
+    {ru:"Где?",                   it:"Dove?",                   pr:"Довэ?"},
+    {ru:"Когда?",                 it:"Quando?",                 pr:"Куандо?"},
+    {ru:"Почему?",                it:"Perché?",                 pr:"Перке?"},
+    {ru:"Кто?",                   it:"Chi?",                    pr:"Ки?"},
+    {ru:"Что?",                   it:"Che cosa?",               pr:"Ке коза?"},
+    {ru:"Как?",                   it:"Come?",                   pr:"Комэ?"},
+    {ru:"Сколько?",               it:"Quanto?",                 pr:"Куанто?"},
+    {ru:"Который час?",           it:"Che ora è?",              pr:"Ке ора э?"},
+    {ru:"Что это?",               it:"Cos'è questo?",           pr:"Козэ куэсто?"},
+    {ru:"Где туалет?",            it:"Dov'è il bagno?",         pr:"Довэ иль банё?"},
+  ]},
+  "Кафе и ресторан": {icon:"☕", phrases:[
+    {ru:"Столик на двоих",        it:"Un tavolo per due",       pr:"Ун таволо пер дуэ"},
+    {ru:"Меню, пожалуйста",       it:"Il menù, per favore",     pr:"Иль меню, пер фаворэ"},
+    {ru:"Что вы рекомендуете?",   it:"Cosa consiglia?",         pr:"Коза консилья?"},
+    {ru:"Я возьму это",           it:"Prendo questo",           pr:"Прэндо куэсто"},
+    {ru:"Без мяса",               it:"Senza carne",             pr:"Сэнца карнэ"},
+    {ru:"Я аллергик на...",       it:"Sono allergico a...",     pr:"Соно аллерджико а..."},
+    {ru:"Счёт, пожалуйста",       it:"Il conto, per favore",    pr:"Иль конто, пер фаворэ"},
+    {ru:"Оплатить картой",        it:"Pago con carta",          pr:"Паго кон карта"},
+    {ru:"Вкусно!",                it:"Buonissimo!",             pr:"Буонисимо!"},
+    {ru:"Стакан воды",            it:"Un bicchiere d'acqua",    pr:"Ун биккьерэ даккуа"},
+    {ru:"Кофе с молоком",         it:"Caffè macchiato",         pr:"Каффэ маккьято"},
+    {ru:"Ещё бокал вина",         it:"Un altro bicchiere di vino", pr:"Ун альтро биккьерэ ди вино"},
+    {ru:"Без глютена",            it:"Senza glutine",           pr:"Сэнца глутинэ"},
+    {ru:"На вынос",               it:"Da portare via",          pr:"Да портарэ виа"},
+  ]},
+  "Магазин / рынок": {icon:"🛒", phrases:[
+    {ru:"Сколько стоит?",         it:"Quanto costa?",           pr:"Куанто коста?"},
+    {ru:"Я просто смотрю",        it:"Sto solo guardando",      pr:"Сто соло гуарданде"},
+    {ru:"Есть ли скидка?",        it:"C'è uno sconto?",         pr:"Чэ уно сконто?"},
+    {ru:"Это дорого",             it:"È troppo caro",           pr:"Э троппо каро"},
+    {ru:"Можно дешевле?",         it:"Può farmi un prezzo migliore?", pr:"Пуо фарми ун прэццо мильоре?"},
+    {ru:"Я возьму",               it:"Lo prendo",               pr:"Ло прэндо"},
+    {ru:"Мне не подходит",        it:"Non fa per me",           pr:"Нон фа пер мэ"},
+    {ru:"Есть другой цвет?",      it:"C'è in un altro colore?", pr:"Чэ ин ун альтро колорэ?"},
+    {ru:"Какой размер?",          it:"Che taglia è?",           pr:"Ке талья э?"},
+    {ru:"Можно примерить?",       it:"Posso provarlo?",         pr:"Поссо провало?"},
+    {ru:"Где примерочная?",       it:"Dov'è il camerino?",      pr:"Довэ иль камерино?"},
+    {ru:"Слишком большой",        it:"È troppo grande",         pr:"Э троппо грандэ"},
+    {ru:"Слишком маленький",      it:"È troppo piccolo",        pr:"Э троппо пикколо"},
+    {ru:"Пакет, пожалуйста",      it:"Un sacchetto, per favore", pr:"Ун саккэтто, пер фаворэ"},
+    {ru:"Оплата наличными",       it:"Pago in contanti",        pr:"Паго ин контанти"},
+    {ru:"Tax free оформить",      it:"Vorrei il tax free",      pr:"Воррэй иль такс фри"},
+  ]},
+  "Транспорт": {icon:"🚌", phrases:[
+    {ru:"Где остановка автобуса?", it:"Dove si ferma l'autobus?", pr:"Довэ си фэрма лаутобус?"},
+    {ru:"Билет до...",            it:"Un biglietto per...",      pr:"Ун бильетто пер..."},
+    {ru:"Прямой поезд?",          it:"È un treno diretto?",     pr:"Э ун трэно дирэтто?"},
+    {ru:"Во сколько отправляется?",it:"A che ora parte?",        pr:"А ке ора партэ?"},
+    {ru:"Где пересадка?",         it:"Dove devo cambiare?",      pr:"Довэ дэво камбьярэ?"},
+    {ru:"Такси, пожалуйста",      it:"Un taxi, per favore",      pr:"Ун такси, пер фаворэ"},
+    {ru:"Отвезите сюда",          it:"Mi porti qui",             pr:"Ми порти куи"},
+    {ru:"Я опаздываю",            it:"Sono in ritardo",          pr:"Соно ин ритардо"},
+    {ru:"Прямо",                  it:"Dritto",                   pr:"Дритто"},
+    {ru:"Налево",                 it:"A sinistra",               pr:"А синистра"},
+    {ru:"Направо",                it:"A destra",                 pr:"А дэстра"},
+    {ru:"Остановите здесь",       it:"Si fermi qui",             pr:"Си фэрми куи"},
+  ]},
+  "Отель": {icon:"🏨", phrases:[
+    {ru:"У меня бронь",           it:"Ho una prenotazione",     pr:"О уна пренотационэ"},
+    {ru:"Свободный номер есть?",  it:"C'è una camera libera?",  pr:"Чэ уна камера либера?"},
+    {ru:"Завтрак включён?",       it:"La colazione è inclusa?", pr:"Ла колацьонэ э инклуза?"},
+    {ru:"Ключ от номера",         it:"La chiave della camera",  pr:"Ла кьявэ дэлла камера"},
+    {ru:"Wi-Fi пароль?",          it:"Qual è la password del Wi-Fi?", pr:"Куалэ ля пассворд дэль вайфай?"},
+    {ru:"Разбудите меня в...",    it:"Mi svegli alle...",        pr:"Ми звэли аллэ..."},
+    {ru:"Полотенца, пожалуйста",  it:"Degli asciugamani, per favore", pr:"Дэли ашугамани, пер фаворэ"},
+    {ru:"Не работает кондиционер",it:"L'aria condizionata non funziona", pr:"Лариа кондиционата нон функционэ"},
+    {ru:"Поздний выезд возможен?",it:"È possibile il check-out posticipato?", pr:"Э поссибилэ иль чекаут постичипато?"},
+    {ru:"Вызовите такси",         it:"Mi chiami un taxi",       pr:"Ми кьями ун такси"},
+  ]},
+  "Экстренные": {icon:"🆘", phrases:[
+    {ru:"Помогите!",              it:"Aiuto!",                   pr:"Айуто!"},
+    {ru:"Вызовите скорую!",       it:"Chiamate un'ambulanza!",  pr:"Кьямате унамбуланца!"},
+    {ru:"Вызовите полицию!",      it:"Chiamate la polizia!",    pr:"Кьямате ля полиция!"},
+    {ru:"Мне плохо",              it:"Mi sento male",           pr:"Ми сэнто малэ"},
+    {ru:"У меня украли...",       it:"Mi hanno rubato...",      pr:"Ми анно рубато..."},
+    {ru:"Я потерял паспорт",      it:"Ho perso il passaporto",  pr:"О пэрсо иль пассапорто"},
+    {ru:"Где больница?",          it:"Dov'è l'ospedale?",       pr:"Довэ лоспэдалэ?"},
+    {ru:"Мне нужен врач",         it:"Ho bisogno di un medico", pr:"О бизоньо ди ун мэдико"},
+    {ru:"Аптека",                 it:"Farmacia",                pr:"Фармачия"},
+  ]},
+  "Числа": {icon:"🔢", phrases:[
+    {ru:"0",  it:"Zero",    pr:"Дзэро"},
+    {ru:"1",  it:"Uno",     pr:"Уно"},
+    {ru:"2",  it:"Due",     pr:"Дуэ"},
+    {ru:"3",  it:"Tre",     pr:"Трэ"},
+    {ru:"4",  it:"Quattro", pr:"Куаттро"},
+    {ru:"5",  it:"Cinque",  pr:"Чинкуэ"},
+    {ru:"6",  it:"Sei",     pr:"Сэй"},
+    {ru:"7",  it:"Sette",   pr:"Сэттэ"},
+    {ru:"8",  it:"Otto",    pr:"Отто"},
+    {ru:"9",  it:"Nove",    pr:"Новэ"},
+    {ru:"10", it:"Dieci",   pr:"Дьечи"},
+    {ru:"11", it:"Undici",  pr:"Ундичи"},
+    {ru:"12", it:"Dodici",  pr:"Додичи"},
+    {ru:"20", it:"Venti",   pr:"Вэнти"},
+    {ru:"30", it:"Trenta",  pr:"Трэнта"},
+    {ru:"50", it:"Cinquanta",pr:"Чинкуанта"},
+    {ru:"100",it:"Cento",   pr:"Чэнто"},
+    {ru:"1000",it:"Mille",  pr:"Миллэ"},
+  ]},
+  "Дни и месяцы": {icon:"📅", phrases:[
+    {ru:"Сегодня",     it:"Oggi",       pr:"Оджи"},
+    {ru:"Завтра",      it:"Domani",     pr:"Домани"},
+    {ru:"Вчера",       it:"Ieri",       pr:"Йери"},
+    {ru:"Понедельник", it:"Lunedì",     pr:"Люнэди"},
+    {ru:"Вторник",     it:"Martedì",    pr:"Мартэди"},
+    {ru:"Среда",       it:"Mercoledì",  pr:"Мерколеди"},
+    {ru:"Четверг",     it:"Giovedì",    pr:"Джоведи"},
+    {ru:"Пятница",     it:"Venerdì",    pr:"Вэнэрди"},
+    {ru:"Суббота",     it:"Sabato",     pr:"Сабато"},
+    {ru:"Воскресенье", it:"Domenica",   pr:"Домэника"},
+    {ru:"Январь",  it:"Gennaio",  pr:"Дженнайо"},
+    {ru:"Февраль", it:"Febbraio", pr:"Феббрайо"},
+    {ru:"Март",    it:"Marzo",    pr:"Марцо"},
+    {ru:"Апрель",  it:"Aprile",   pr:"Априле"},
+    {ru:"Май",     it:"Maggio",   pr:"Маджио"},
+    {ru:"Июнь",    it:"Giugno",   pr:"Джуньо"},
+    {ru:"Июль",    it:"Luglio",   pr:"Лульо"},
+    {ru:"Август",  it:"Agosto",   pr:"Агосто"},
+    {ru:"Сентябрь",it:"Settembre",pr:"Сэттэмбрэ"},
+    {ru:"Октябрь", it:"Ottobre",  pr:"Оттобрэ"},
+    {ru:"Ноябрь",  it:"Novembre", pr:"Новэмбрэ"},
+    {ru:"Декабрь", it:"Dicembre", pr:"Дичэмбрэ"},
+  ]},
+};
+
+const categories = Object.keys(DATA);
+let activeCategory = "all";
+let mode = "browse";
+let searchQuery = "";
+let cardIdx = 0, cardFlipped = false;
+let quizIdx = 0, qC = 0, qW = 0, qS = 0;
+let typeIdx = 0, tC = 0, tW = 0, typeAnswered = false;
+let workingCards = [];
+
+function getAllPhrases() {
+  const all = [];
+  categories.forEach(cat => DATA[cat].phrases.forEach(p => all.push({...p, cat})));
+  return all;
+}
+
+function getCategoryPhrases(cat) {
+  return DATA[cat].phrases.map(p => ({...p, cat}));
+}
+
+function getFiltered() {
+  let list = activeCategory === "all" ? getAllPhrases() : getCategoryPhrases(activeCategory);
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    list = list.filter(p => p.ru.toLowerCase().includes(q) || p.it.toLowerCase().includes(q) || p.pr.toLowerCase().includes(q));
+  }
+  return list;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+// NAV
+function buildNav() {
+  const el = document.getElementById("navList");
+  const allCount = getAllPhrases().length;
+  let html = `<button class="nav-item ${activeCategory==='all'?'active':''}" onclick="setCategory('all')">
+    <span class="icon">🌐</span> Все фразы <span class="count">${allCount}</span></button>`;
+  categories.forEach(cat => {
+    const cnt = DATA[cat].phrases.length;
+    html += `<button class="nav-item ${activeCategory===cat?'active':''}" onclick="setCategory('${cat}')">
+      <span class="icon">${DATA[cat].icon}</span> ${cat} <span class="count">${cnt}</span></button>`;
+  });
+  el.innerHTML = html;
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  searchQuery = "";
+  document.getElementById("searchInput").value = "";
+  cardIdx = 0; quizIdx = 0; typeIdx = 0;
+  buildNav();
+  render();
+  closeSidebar();
+}
+
+function setMode(m) {
+  mode = m;
+  cardIdx = 0; quizIdx = 0; typeIdx = 0;
+  qC=0; qW=0; qS=0; tC=0; tW=0;
+  ["browse","cards","quiz","type"].forEach(x => {
+    const b = document.getElementById("mb-"+x);
+    if (b) b.classList.toggle("active", x===m);
+  });
+  workingCards = shuffle(getFiltered());
+  render();
+}
+
+function doSearch() {
+  searchQuery = document.getElementById("searchInput").value.trim();
+  cardIdx = 0;
+  render();
+}
+
+function render() {
+  const title = activeCategory === "all" ? "Все фразы" : activeCategory;
+  document.getElementById("pageTitle").textContent = title;
+  if (mode === "browse") renderBrowse();
+  else if (mode === "cards") renderCards();
+  else if (mode === "quiz") renderQuiz();
+  else if (mode === "type") renderType();
+}
+
+// BROWSE
+function renderBrowse() {
+  const content = document.getElementById("mainContent");
+  if (searchQuery) {
+    const list = getFiltered();
+    if (!list.length) { content.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div>Ничего не найдено</div>`; return; }
+    content.innerHTML = `<div class="section-hdr"><h3>Результаты: "${searchQuery}"</h3><span class="cnt">${list.length} фраз</span></div>
+      <div class="cards-grid">${list.map(phraseCard).join("")}</div>`;
+    return;
+  }
+  if (activeCategory !== "all") {
+    const list = getCategoryPhrases(activeCategory);
+    content.innerHTML = `<div class="section-hdr"><h3>${DATA[activeCategory].icon} ${activeCategory}</h3><span class="cnt">${list.length} фраз</span></div>
+      <div class="cards-grid">${list.map(phraseCard).join("")}</div>`;
+    return;
+  }
+  let html = "";
+  categories.forEach((cat, i) => {
+    const list = DATA[cat].phrases;
+    html += `<div class="section-hdr"><h3>${DATA[cat].icon} ${cat}</h3><span class="cnt">${list.length}</span></div>
+      <div class="cards-grid">${list.slice(0,6).map(p=>phraseCard({...p,cat})).join("")}</div>`;
+    if (list.length > 6) html += `<div style="margin-bottom:8px;"><button onclick="setCategory('${cat}')" style="font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;padding:4px 0;">Показать все ${list.length} →</button></div>`;
+    if (i < categories.length-1) html += `<div class="section-sep"></div>`;
+  });
+  content.innerHTML = html;
+}
+
+function phraseCard(p) {
+  return `<div class="phrase-card">
+    <div class="ru">${p.ru}</div>
+    <div class="it">${p.it}</div>
+    <div class="pr">${p.pr}</div>
+    <div class="tag">${p.cat}</div>
+  </div>`;
+}
+
+// FLASHCARDS
+function renderCards() {
+  const cards = getFiltered();
+  if (!cards.length) { document.getElementById("mainContent").innerHTML = `<div class="empty"><div class="empty-icon">🃏</div>Нет карточек</div>`; return; }
+  if (cardIdx >= cards.length) cardIdx = 0;
+  const c = cards[cardIdx];
+  const pct = Math.round(((cardIdx+1)/cards.length)*100);
+  document.getElementById("mainContent").innerHTML = `
+    <div class="fc-wrap">
+      <div class="fc-progress">${cardIdx+1} / ${cards.length}</div>
+      <div class="fc-bar"><div class="fc-bar-fill" style="width:${pct}%"></div></div>
+      <div class="fc-card" onclick="fcFlip()">
+        <div class="fc-inner" id="fcInner">
+          <div class="fc-face">
+            <div class="fc-face-label">🇷🇺 русский</div>
+            <div class="fc-word">${c.ru}</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-face-label">🇮🇹 итальянский</div>
+            <div class="fc-word">${c.it}</div>
+            <div class="fc-pron">${c.pr}</div>
+            <div class="fc-topic">${c.cat}</div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-hint">👆 нажми чтобы перевернуть</div>
+      <div class="fc-nav">
+        <button class="fc-btn" onclick="fcPrev()">←</button>
+        <button class="fc-shuffle" onclick="fcShuffle()">🔀 Перемешать</button>
+        <button class="fc-btn" onclick="fcNext()">→</button>
+      </div>
+    </div>`;
+  cardFlipped = false;
+}
+
+function fcFlip() {
+  cardFlipped = !cardFlipped;
+  const el = document.getElementById("fcInner");
+  if (el) el.classList.toggle("flipped", cardFlipped);
+}
+function fcNext() { const cards = getFiltered(); cardIdx = (cardIdx+1)%cards.length; renderCards(); }
+function fcPrev() { const cards = getFiltered(); cardIdx = (cardIdx-1+cards.length)%cards.length; renderCards(); }
+function fcShuffle() {
+  const cards = shuffle(getFiltered());
+  DATA[activeCategory === "all" ? null : activeCategory];
+  workingCards = cards;
+  cardIdx = 0; renderCards();
+}
+
+// QUIZ
+function renderQuiz() {
+  const cards = getFiltered();
+  const content = document.getElementById("mainContent");
+  if (cards.length < 4) {
+    content.innerHTML = `<div class="quiz-wrap"><div class="empty"><div class="empty-icon">🎯</div>Нужно минимум 4 фразы</div></div>`;
+    return;
+  }
+  const c = cards[quizIdx % cards.length];
+  const others = shuffle(cards.filter(x => x.it !== c.it)).slice(0,3);
+  const opts = shuffle([c,...others]);
+  content.innerHTML = `
+    <div class="quiz-wrap">
+      <div class="fc-bar"><div class="fc-bar-fill" style="width:${Math.round(((quizIdx%cards.length)+1)/cards.length*100)}%"></div></div>
+      <div class="quiz-q">${c.ru}</div>
+      <div class="quiz-sub">Выберите правильный итальянский перевод</div>
+      <div class="quiz-opts" id="quizOpts">
+        ${opts.map(o=>`<button class="quiz-opt" onclick="quizCheck(this,'${escQ(o.it)}','${escQ(c.it)}')">${o.it}\n${o.pr}</button>`).join("")}
+      </div>
+      <div class="quiz-stats">
+        <div class="stat-box"><div class="stat-num" style="color:var(--green)">${qC}</div><div class="stat-lbl">Правильно</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--red)">${qW}</div><div class="stat-lbl">Ошибок</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--accent2)">${qS}</div><div class="stat-lbl">Серия</div></div>
+      </div>
+      <button onclick="resetQuiz()" style="font-size:13px;color:var(--muted);background:none;border:none;cursor:pointer;">↺ Начать заново</button>
+    </div>`;
+}
+
+function escQ(s) { return s.replace(/'/g,"\\'"); }
+
+function quizCheck(btn, chosen, correct) {
+  const btns = document.querySelectorAll(".quiz-opt");
+  btns.forEach(b => {
+    b.disabled = true;
+    if (b.textContent.startsWith(correct)) b.classList.add("correct");
+  });
+  if (chosen === correct) { qC++; qS++; }
+  else { qW++; qS=0; btn.classList.add("wrong"); }
+  setTimeout(() => { quizIdx++; renderQuiz(); }, 900);
+}
+
+function resetQuiz() { quizIdx=0; qC=0; qW=0; qS=0; renderQuiz(); }
+
+// TYPE
+function renderType() {
+  const cards = getFiltered();
+  const content = document.getElementById("mainContent");
+  if (!cards.length) { content.innerHTML = `<div class="empty">Нет фраз</div>`; return; }
+  const c = cards[typeIdx % cards.length];
+  content.innerHTML = `
+    <div class="type-wrap">
+      <div class="fc-bar"><div class="fc-bar-fill" style="width:${Math.round(((typeIdx%cards.length)+1)/cards.length*100)}%"></div></div>
+      <div class="type-q">${c.ru}</div>
+      <div class="type-sub">Введи по-итальянски</div>
+      <input class="type-input" id="typeInp" placeholder="scrivi in italiano..." onkeydown="if(event.key==='Enter')checkType()">
+      <div class="type-fb" id="typeFb"></div>
+      <button class="type-check" onclick="checkType()">Проверить →</button>
+      <div class="quiz-stats" style="margin-top:1.5rem;">
+        <div class="stat-box"><div class="stat-num" style="color:var(--green)">${tC}</div><div class="stat-lbl">Правильно</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--red)">${tW}</div><div class="stat-lbl">Ошибок</div></div>
+      </div>
+      <button onclick="typeSkip()" style="font-size:13px;color:var(--muted);background:none;border:none;cursor:pointer;margin-top:8px;">Пропустить →</button>
+    </div>`;
+  typeAnswered = false;
+  document.getElementById("typeInp").focus();
+}
+
+function norm(s) {
+  return s.toLowerCase().trim()
+    .replace(/[àáâã]/g,"a").replace(/[èéêë]/g,"e")
+    .replace(/[ìíîï]/g,"i").replace(/[òóôõ]/g,"o")
+    .replace(/[ùúûü]/g,"u").replace(/[!?,\.]/g,"").replace(/\s+/g," ");
+}
+
+function checkType() {
+  if (typeAnswered) { typeIdx++; renderType(); return; }
+  const cards = getFiltered();
+  const c = cards[typeIdx % cards.length];
+  const val = document.getElementById("typeInp").value;
+  const fb = document.getElementById("typeFb");
+  const ok = norm(val) === norm(c.it);
+  if (ok) {
+    fb.textContent = "✓ Правильно!";
+    fb.style.color = "var(--green)";
+    tC++;
+    typeAnswered = true;
+    setTimeout(() => { typeIdx++; renderType(); }, 1100);
+  } else {
+    fb.textContent = "✗  " + c.it + "  (" + c.pr + ")";
+    fb.style.color = "var(--red)";
+    tW++;
+    typeAnswered = true;
+  }
+}
+
+function typeSkip() { typeIdx++; renderType(); }
+
+// SIDEBAR
+function openSidebar() {
+  document.getElementById("sidebar").classList.add("open");
+  document.getElementById("overlay").classList.add("show");
+}
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("overlay").classList.remove("show");
+}
+
+// INIT
+buildNav();
+render();
+</script>
+</body>
+</html>
